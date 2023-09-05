@@ -5,7 +5,9 @@ import 'package:quiz_app/styled_text.dart';
 import 'package:quiz_app/data/questions.dart';
 
 class QuestionScreen extends StatefulWidget {
-  const QuestionScreen({super.key});
+  const QuestionScreen({super.key, required this.onSelectAnswer});
+
+  final void Function(String answer) onSelectAnswer;
 
   @override
   State<QuestionScreen> createState() {
@@ -14,19 +16,15 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionsScreenState extends State<QuestionScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
   var currentQuestionIndex = 0;
-  
-  void onTap(){
+
+  void answerQuestion(String selectedAnswer) {
+    widget.onSelectAnswer(selectedAnswer);
     setState(() {
-      currentQuestionIndex++;
+      currentQuestionIndex += 1;
     });
-    
   }
+
   @override
   Widget build(BuildContext context) {
     final currentQuestion = questions[currentQuestionIndex];
@@ -38,7 +36,16 @@ class _QuestionsScreenState extends State<QuestionScreen> {
         children: [
           StyledText(currentQuestion.text),
           const SizedBox(height: 30),
-          ...currentQuestion.getShuffledList().map((answer) => AnswerButton(onTap, answer)),
+          ...currentQuestion.getShuffledList().map(
+            (answer) {
+              return AnswerButton(
+                () {
+                  answerQuestion(answer);
+                },
+                answer,
+              );
+            },
+          ),
         ],
       ),
     );
